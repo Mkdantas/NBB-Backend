@@ -1,5 +1,7 @@
 {
   "name": "NBB",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "react"
 }

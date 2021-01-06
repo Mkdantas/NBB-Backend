@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "162191187340",
+    "project_id": "nbb---brasil-basquete",
+    "storage_bucket": "nbb---brasil-basquete.appspot.com"
+  },
+  "client": [
+    // {
+    //   "client_info": {
+    //     "mobilesdk_app_id": "1:162191187340:android:41a9e677cae050259fcaa9",
+    //     "android_client_info": {
+    //       "package_name": "com.brasilbasquete.nbb"
+    //     }
+    //   },
+    //   "oauth_client": [
+    //     {
+    //       "client_id": "162191187340-ma7391jsgjc93l8d3oj82avefig5mv60.apps.googleusercontent.com",
+    //       "client_type": 3
+    //     }
+    //   ],
+    //   "api_key": [
+    //     {
+    //       "current_key": "AIzaSyCMDsQ_faO5oyf0WcmXozMNPULp_t6vXgs"
+    //     }
+    //   ],
+    //   "services": {
+    //     "appinvite_service": {
+    //       "other_platform_oauth_client": [
+    //         {
+    //           "client_id": "162191187340-ma7391jsgjc93l8d3oj82avefig5mv60.apps.googleusercontent.com",
+    //           "client_type": 3
+    //         }
+    //       ]
+    //     }
+    //   }
+    // },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162191187340:android:2f344d136f08671a9fcaa9",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162191187340-ma7391jsgjc93l8d3oj82avefig5mv60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMDsQ_faO5oyf0WcmXozMNPULp_t6vXgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162191187340-ma7391jsgjc93l8d3oj82avefig5mv60.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
