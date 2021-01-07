@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonItem, IonLabel, IonButton, IonIcon, IonDatetime } from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonIcon, IonDatetime, IonSelect, IonSelectOption } from '@ionic/react';
 import fire from 'firebase';
 
 import './styles.css';
@@ -18,6 +18,7 @@ const AddGames: React.FC = () => {
   const [homeTeam, setHomeTeam] = useState('');
   const [visitorTeam, setVisitorTeam] = useState('');
   const [validated, setValidated] =  useState(false);
+  const [teams, setTeams] = useState([{}]);
 
   const submitGame = (e:any) =>{
     e.preventDefault();
@@ -32,7 +33,19 @@ const AddGames: React.FC = () => {
       console.error("Error adding document: ", error);
     });
   }
+  const fetchTeams = async () => {
+    const fetchedTeams = await db.collection("teams").get();
+    setTeams(
+      fetchedTeams.docs.map((doc: any) => {
+        return doc.data();
+      })
+    );
+  };
 
+  useEffect(() => {
+    fetchTeams();
+    //eslint-disable-next-line
+  }, [] );
   return (
     <IonPage className="add-team-page">
       {validated ? <Redirect to="/games"/> : null}
@@ -47,12 +60,22 @@ const AddGames: React.FC = () => {
       <IonContent>
         <form onSubmit={submitGame}>
           <IonItem>
-            <IonLabel position="floating">Home Team Name:</IonLabel>
-            <IonInput value={homeTeam} onIonChange={e => setHomeTeam(e.detail.value!)}> </IonInput>
+          <IonSelect value={homeTeam} onIonChange={ (e:any) => setHomeTeam(e.detail.value!)} placeholder="Home Team" >
+              {teams.map((team:any) =>{
+                return (
+                  <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
+                )
+              })}
+            </IonSelect>
           </IonItem>
           <IonItem>
-            <IonLabel position="floating">Visitor Team Name:</IonLabel>
-            <IonInput value={visitorTeam} onIonChange={e => setVisitorTeam(e.detail.value!)}> </IonInput>
+          <IonSelect value={visitorTeam} onIonChange={ (e:any) => setVisitorTeam(e.detail.value!)} placeholder="Visitor Team" >
+              {teams.map((team:any) =>{
+                return (
+                  <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
+                )
+              })}
+            </IonSelect>
           </IonItem>
          <IonItem>
          <IonLabel position="floating">Date:</IonLabel>
