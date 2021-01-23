@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   IonAvatar,
+  IonButton,
   IonContent,
   IonFab,
   IonFabButton,
@@ -13,6 +14,7 @@ import {
   IonLabel,
   IonList,
   IonMenuButton,
+  IonModal,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -23,21 +25,30 @@ import { RefresherEventDetail } from "@ionic/core";
 import fire from "firebase";
 
 import "./styles.css";
-import { addOutline } from "ionicons/icons";
+import { addOutline, arrowBack } from "ionicons/icons";
 import SkeletonCustom from "../../components/SkeletonCustom";
+import UpdateData from "../../components/UpdateData";
 
 const Teams: React.FC = () => {
   const db = fire.firestore();
 
   const [teams, setTeams] = useState<any>();
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem] = useState('');
 
   const handleDelete = (team: any) => {
     db.collection("teams")
       .doc(team.ID)
       .delete()
       .then(() => {
-        console.log("deleted");
+        setTeams([]);
+        fetchTeams();
       });
+  };
+
+  const handleEdit = (team: any) => {
+    setEditItem(team.ID);
+    setShowModal(true);
   };
 
   const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -70,6 +81,17 @@ const Teams: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
+      <IonModal isOpen={showModal} cssClass='my-custom-class'>
+      <IonHeader>
+        <IonToolbar>
+          <IonButton fill="clear" slot="start" onClick={() => setShowModal(false)}>
+            <IonIcon ios={arrowBack} md={arrowBack}/> 
+          </IonButton>
+          <IonTitle>Update Team</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+        <UpdateData updateID={editItem} type="team"/>
+      </IonModal>
         <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
@@ -83,13 +105,23 @@ const Teams: React.FC = () => {
             {teams.map((team: any) => {
               return (
                 <IonItemSliding key={Math.random()}>
-                  <IonItemOptions side="end">
+                  <IonItemOptions side="end" onIonSwipe={e => console.log('foi')}>
                     <IonItemOption
                       color="danger"
                       onClick={(e) => handleDelete(team)}
                       expandable
+                      
                     >
                       Delete
+                    </IonItemOption>
+                  </IonItemOptions>
+                  <IonItemOptions side="start" onIonSwipe={e => console.log('foi')}>
+                    <IonItemOption
+                      onClick={(e) => handleEdit(team)}
+                      expandable
+                      
+                    >
+                      Edit
                     </IonItemOption>
                   </IonItemOptions>
                   <IonItem key={Math.random()}>

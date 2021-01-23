@@ -6,6 +6,8 @@ import './styles.css';
 import { arrowBack } from 'ionicons/icons';
 import { Redirect } from 'react-router';
 
+
+
 const AddTeams: React.FC = () => {
   const db = fire.firestore();
 

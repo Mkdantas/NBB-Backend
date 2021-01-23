@@ -1,0 +1,20 @@
+.update-data-page .team-logo {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1rem;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.171);
+}
+
+
+.update-data-page ion-label{
+    font-size: 20px;
+}
+
+.update-data-page .team-logo label {
+    padding-bottom: 1rem;
+}
+
+.update-data-page .submit-button{
+    padding: 1rem 1rem;
+}
