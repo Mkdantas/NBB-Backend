@@ -42,6 +42,16 @@ const AddTeams: React.FC = () => {
     }).catch(function (error) {
       console.error("Error adding document: ", error);
     });
+
+    db.collection('ranking').doc(ID).set({
+      team,
+      wins: 0,
+      games: 0,
+      loss: 0,
+      teamPoints: 0,
+      enemyPoints: 0,
+      totalPoints: 0
+    })
   }
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonIcon, IonDatetime, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonIcon, IonDatetime, IonSelect, IonSelectOption, IonInput } from '@ionic/react';
 import fire from 'firebase';
 
 import './styles.css';
@@ -19,20 +19,69 @@ const AddGames: React.FC = () => {
   const [visitorTeam, setVisitorTeam] = useState('');
   const [validated, setValidated] =  useState(false);
   const [teams, setTeams] = useState([{}]);
+  const [homeScore, setHomeScore] = useState(0);
+  const [visitorScore, setVisitorScore] = useState(0);
+  const [wins, setWins] = useState<number>();
+  const [loss, setLoss] = useState<number>();
+  const [teamPoints, setTeamPoints] = useState<number>();
+  const [enemyPoints, setEnemyPoints] = useState<number>();
+  const [totalPoints, setTotalPoints] = useState<number>();
+  const [games, setGames] = useState<number>();
 
-  const submitGame = (e:any) =>{
+  const setWinnerLoser = async (winner:any, loser:any, winnerScore:number, enemyScore:number) =>{
+    await db.collection('ranking').doc(winner).get().then((rankings:any) =>{
+      setWins(rankings.doc().wins + 1)
+      setGames(rankings.doc().games + 1)
+      setTeamPoints(rankings.doc().teamPoints + winnerScore);
+      setEnemyPoints(rankings.doc().enemyPoints + enemyScore);
+      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
+    })
+    await db.collection('ranking').doc(winner).update({
+      wins,
+      games,
+      teamPoints,
+      enemyPoints,
+      totalPoints,
+    })
+    await db.collection('rankings').doc(loser).get().then((rankings:any) =>{
+      setLoss(rankings.doc().loss + 1)
+      setGames(rankings.doc().games + 1)
+      setTeamPoints(rankings.doc().teamPoints + enemyScore);
+      setEnemyPoints(rankings.doc().enemyPoints + winnerScore);
+      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
+    })
+    await db.collection('ranking').doc(loser).update({
+      loss,
+      games,
+      teamPoints,
+      enemyPoints,
+      totalPoints,
+    })
+  }
+
+
+  const submitGame = async (e:any) =>{
     e.preventDefault();
-    db.collection("games").doc(ID).set({
+    await db.collection("games").doc(ID).set({
       ID,
       homeTeam,
       visitorTeam,
-      selectedDate
+      selectedDate,
+      homeScore,
+      visitorScore
     }).then(() =>{
       setValidated(true);
     }).catch(function (error) {
       console.error("Error adding document: ", error);
     });
+
+    if(homeScore > visitorScore){
+      await setWinnerLoser(homeTeam, visitorTeam, homeScore, visitorScore);
+    } else if (visitorScore > homeScore){
+      await setWinnerLoser(visitorTeam, homeTeam, visitorScore, homeScore);
+    }
   }
+
   const fetchTeams = async () => {
     const fetchedTeams = await db.collection("teams").get();
     setTeams(
@@ -63,19 +112,27 @@ const AddGames: React.FC = () => {
           <IonSelect value={homeTeam} onIonChange={ (e:any) => setHomeTeam(e.detail.value!)} placeholder="Home Team" >
               {teams.map((team:any) =>{
                 return (
-                  <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
+                  <IonSelectOption key={Math.random()} value={team.ID}>{team.name}</IonSelectOption>
                 )
               })}
             </IonSelect>
           </IonItem>
           <IonItem>
+          <IonLabel position="fixed">Score: </IonLabel>
+          <IonInput type="tel" value={homeScore} maxlength={3} onIonChange={(e:any) => setHomeScore(e.detail.value!)} ></IonInput>
+          </IonItem>
+          <IonItem>
           <IonSelect value={visitorTeam} onIonChange={ (e:any) => setVisitorTeam(e.detail.value!)} placeholder="Visitor Team" >
               {teams.map((team:any) =>{
                 return (
-                  <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
+                  <IonSelectOption key={Math.random()} value={team.ID}>{team.name}</IonSelectOption>
                 )
               })}
             </IonSelect>
+          </IonItem>
+          <IonItem>
+          <IonLabel position="fixed">Score: </IonLabel>
+          <IonInput type="tel" value={visitorScore} maxlength={3} onIonChange={(e:any) => setVisitorScore(e.detail.value!)} ></IonInput>
           </IonItem>
          <IonItem>
          <IonLabel position="floating">Date:</IonLabel>

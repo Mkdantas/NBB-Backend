@@ -22,6 +22,16 @@ const UpdateData: React.FC<updateInfo> = ({type, updateID}) => {
   const [visitorTeam, setVisitorTeam] = useState('');
   const [teams, setTeams] = useState([{}]);
   const [updatingLogo, setUpdatingLogo] = useState(false);
+  const [homeScore, setHomeScore] = useState(0);
+  const [visitorScore, setVisitorScore] = useState(0);
+  const [wins, setWins] = useState<number>();
+  const [loss, setLoss] = useState<number>();
+  const [teamPoints, setTeamPoints] = useState<number>();
+  const [enemyPoints, setEnemyPoints] = useState<number>();
+  const [totalPoints, setTotalPoints] = useState<number>();
+  const [games, setGames] = useState<number>();
+  const [visitorTeamName, setVisitorTeamName] = useState<string>();
+  const [homeTeamName, setHomeTeamName] = useState<string>();
 
   const onFileChange = async (e:any) =>{
     const file = e.target.files[0];
@@ -58,8 +68,15 @@ const UpdateData: React.FC<updateInfo> = ({type, updateID}) => {
       setHomeTeam(doc.data().homeTeam);
       setVisitorTeam(doc.data().visitorTeam);
       setSelectedDate(doc.data().selectedDate);
+      setVisitorScore(doc.data().visitorScore);
+      setHomeScore(doc.data().homeScore);
+      db.collection('teams').doc(doc.data().homeTeam).get().then((doc:any) =>{
+        setHomeTeamName(doc.data().name);
+      })
+      db.collection('teams').doc(doc.data().visitorTeam).get().then((doc:any) =>{
+        setVisitorTeamName(doc.data().name);
+      })
     });
-
     const fetchedTeams = await db.collection("teams").get();
     setTeams(
       fetchedTeams.docs.map((doc: any) => {
@@ -69,18 +86,56 @@ const UpdateData: React.FC<updateInfo> = ({type, updateID}) => {
   }
   };
 
-  const submitGame = (e:any) =>{
+  const setWinnerLoser = async (winner:any, loser:any, winnerScore:number, enemyScore:number) =>{
+    await db.collection('ranking').doc(winner).get().then((rankings:any) =>{
+      setWins(rankings.doc().wins + 1)
+      setGames(rankings.doc().games + 1)
+      setTeamPoints(rankings.doc().teamPoints + winnerScore);
+      setEnemyPoints(rankings.doc().enemyPoints + enemyScore);
+      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
+    })
+    await db.collection('ranking').doc(winner).update({
+      wins,
+      games,
+      teamPoints,
+      enemyPoints,
+      totalPoints,
+    })
+    await db.collection('rankings').doc(loser).get().then((rankings:any) =>{
+      setLoss(rankings.doc().loss + 1)
+      setGames(rankings.doc().games + 1)
+      setTeamPoints(rankings.doc().teamPoints + enemyScore);
+      setEnemyPoints(rankings.doc().enemyPoints + winnerScore);
+      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
+    })
+    await db.collection('ranking').doc(loser).update({
+      loss,
+      games,
+      teamPoints,
+      enemyPoints,
+      totalPoints,
+    })
+  }
+  const submitGame = async (e:any) =>{
     e.preventDefault();
-    db.collection("games").doc(ID).set({
+    await db.collection("games").doc(ID).update({
       ID,
       homeTeam,
       visitorTeam,
-      selectedDate
+      selectedDate,
+      homeScore,
+      visitorScore
     }).then(() =>{
       setValidated(true);
     }).catch(function (error) {
       console.error("Error adding document: ", error);
     });
+
+    if(homeScore > visitorScore){
+      await setWinnerLoser(homeTeam, visitorTeam, homeScore, visitorScore);
+    } else if (visitorScore > homeScore){
+      await setWinnerLoser(visitorTeam, homeTeam, visitorScore, homeScore);
+    }
   }
 
   useEffect(() =>{
@@ -134,7 +189,8 @@ if(type === 'team') {
         {validated ?  window.location.reload() : null}
         <form onSubmit={submitGame}>
           <IonItem>
-          <IonSelect value={homeTeam} onIonChange={ (e:any) => setHomeTeam(e.detail.value!)} placeholder={homeTeam} >
+          <IonLabel position="fixed">Home Team: </IonLabel>
+          <IonSelect value={homeTeam} onIonChange={ (e:any) => setHomeTeam(e.detail.value!)} placeholder={homeTeamName} >
               {teams.map((team:any) =>{
                 return (
                   <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
@@ -143,13 +199,22 @@ if(type === 'team') {
             </IonSelect>
           </IonItem>
           <IonItem>
-          <IonSelect value={visitorTeam} onIonChange={ (e:any) => setVisitorTeam(e.detail.value!)} placeholder={visitorTeam}>
+          <IonLabel position="fixed">Score: </IonLabel>
+          <IonInput type="tel" value={homeScore} maxlength={3} onIonChange={(e:any) => setHomeScore(e.detail.value!)} ></IonInput>
+          </IonItem>
+          <IonItem>
+          <IonLabel position="fixed">Visitor Team: </IonLabel>
+          <IonSelect value={visitorTeam} onIonChange={ (e:any) => setVisitorTeam(e.detail.value!)} placeholder={visitorTeamName}>
               {teams.map((team:any) =>{
                 return (
                   <IonSelectOption key={Math.random()} value={team.name}>{team.name}</IonSelectOption>
                 )
               })}
             </IonSelect>
+          </IonItem>
+          <IonItem>
+          <IonLabel position="fixed">Score: </IonLabel>
+          <IonInput type="tel" value={visitorScore}  maxlength={3} onIonChange={(e:any) => setVisitorScore(e.detail.value!)} ></IonInput>
           </IonItem>
          <IonItem>
          <IonLabel position="floating">Date:</IonLabel>

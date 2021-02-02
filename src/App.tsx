@@ -10,7 +10,7 @@ import {
   IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { basketball, calendar, newspaper } from 'ionicons/icons';
+import { basketball, calendar, newspaper, podium } from 'ionicons/icons';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -35,6 +35,7 @@ import Games from './pages/Games';
 import fire from './fire';
 import AddTeams from './pages/AddTeams';
 import AddGames from './pages/AddGames';
+import Ranking from './pages/Ranking';
 
 const App: React.FC = () =>{
   fire
@@ -49,6 +50,7 @@ const App: React.FC = () =>{
           <Route path="/add-team" component={AddTeams} exact />
           <Route path="/games" component={Games} />
           <Route path="/add-game" component={AddGames} exact />
+          <Route path="/ranking" component={Ranking} exact />
           <Route path="/" render={() => <Redirect to="/teams" />} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
@@ -63,6 +65,10 @@ const App: React.FC = () =>{
           <IonTabButton tab="tab3" href="/games">
             <IonIcon icon={calendar} />
             <IonLabel>Games</IonLabel>
+          </IonTabButton>
+          <IonTabButton tab="tab4" href="/ranking">
+            <IonIcon icon={podium} />
+            <IonLabel>Rankings</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>

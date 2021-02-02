@@ -13,7 +13,6 @@ import {
   IonItemSliding,
   IonLabel,
   IonList,
-  IonMenuButton,
   IonModal,
   IonPage,
   IonRefresher,
@@ -76,7 +75,6 @@ const Teams: React.FC = () => {
     <IonPage className="teams-page">
       <IonHeader>
         <IonToolbar>
-          <IonMenuButton slot="start" />
           <IonTitle>Teams</IonTitle>
         </IonToolbar>
       </IonHeader>
