@@ -40,7 +40,7 @@ import Ranking from './pages/Ranking';
 const App: React.FC = () =>{
   fire
   .auth()
-  .signInWithEmailAndPassword('matheusnbbdantas@gmail.com', 'lalic1206');
+  .signInWithEmailAndPassword('matheus.kohaku.dantas@gmail.com', 'Lalic1206');
   return (
   <IonApp>
     <IonReactRouter>
