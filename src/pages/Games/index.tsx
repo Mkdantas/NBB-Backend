@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonAvatar, IonButton, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRefresher, IonRefresherContent, IonTitle, IonToolbar} from '@ionic/react';
+import { IonAvatar, IonButton, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonTitle, IonToolbar} from '@ionic/react';
 import fire from 'firebase';
 import { RefresherEventDetail } from "@ionic/core";
 
@@ -20,6 +20,8 @@ const Games: React.FC = () => {
   const [enemyPoints, setEnemyPoints] = useState<number>();
   const [totalPoints, setTotalPoints] = useState<number>();
   const [numberOfGames, setNumberOfGames] = useState<number>();
+  const [skeleton, setSkeleton] = useState(true);
+  const [filterDate, setfilterDate] = useState<any>('>=');
 
   const handleDeleteWinnerLoser = async (winner:any, loser:any, game:any, winnerScore:number, enemyScore:number) =>{
     await db.collection('rankings').doc(winner).get().then((rankings:any) =>{
@@ -76,19 +78,19 @@ const Games: React.FC = () => {
   };
 
   const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
-    fetchGames();
+    fetchGames(filterDate);
     setTimeout(() => {
       event.detail.complete();
     }, 2000);
   };
 
-  const fetchGames = async () =>{
-    const fetchedGames = await db.collection('games').get();
+  const fetchGames = async (dateFilter:any = '>=') =>{
+    const fetchedGames = await db.collection('games').orderBy('selectedDate', 'asc').where('selectedDate', dateFilter, new Date().toISOString()).get();
     let gameData = fetchedGames.docs.map((doc:any) =>{
       return doc.data();
     })
      gameData.forEach(async (game:any) =>{
-      await db.collection('teams').doc(game.visitorTeam).get().then((team:any) =>{
+      await db.collection('teams').doc(game.visitorTeam).get().then((team:any) =>{  
         game.visitorTeamPhoto = team.data().logo
         game.visitorTeamName = team.data().name
       });
@@ -98,9 +100,12 @@ const Games: React.FC = () => {
         game.stadium = team.data().stadium;
       });
         
-          setGames(gameData)
+          
       });
-    
+      setTimeout(() =>{
+        setSkeleton(false);
+         setGames(gameData)}
+         , 500)
   }
 
   useEffect(()=>{
@@ -117,6 +122,19 @@ fetchGames();
         </IonToolbar>
       </IonHeader>
       <IonContent>
+      <IonSegment value={filterDate} onIonChange={e =>{
+        setGames([])
+        setSkeleton(true)
+        setfilterDate(e.detail.value);
+        fetchGames(e.detail.value)
+      } }>
+          <IonSegmentButton mode="md" value="<=">
+            <IonLabel>Past Games</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton  mode="md" value=">=">
+            <IonLabel>Future Games</IonLabel>
+          </IonSegmentButton>
+        </IonSegment>
       <IonModal isOpen={showModal} cssClass='my-custom-class'>
       <IonHeader>
         <IonToolbar>
@@ -136,9 +154,8 @@ fetchGames();
             <IonIcon icon={addOutline} />
           </IonFabButton>
         </IonFab>
-        {games ? 
         <IonList>
-          {games.map( (game:any) =>{
+          {games?.map( (game:any) =>{
             return(
               <IonItemSliding key={Math.random()}>
               <IonItemOptions side="end">
@@ -170,8 +187,8 @@ fetchGames();
             </IonItemSliding>
           )})}
         </IonList>
-        : 
-        <SkeletonCustom/>
+        {skeleton ?  
+        <SkeletonCustom/> : null
             }
       </IonContent>
     </IonPage>
