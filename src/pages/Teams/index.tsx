@@ -36,6 +36,7 @@ const Teams: React.FC = () => {
   const [editItem, setEditItem] = useState('');
 
   const handleDelete = (team: any) => {
+    db.collection('ranking').doc(team.ID).delete()
     db.collection("teams")
       .doc(team.ID)
       .delete()
