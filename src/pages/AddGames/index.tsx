@@ -21,42 +21,27 @@ const AddGames: React.FC = () => {
   const [teams, setTeams] = useState([{}]);
   const [homeScore, setHomeScore] = useState(0);
   const [visitorScore, setVisitorScore] = useState(0);
-  const [wins, setWins] = useState<number>();
-  const [loss, setLoss] = useState<number>();
-  const [teamPoints, setTeamPoints] = useState<number>();
-  const [enemyPoints, setEnemyPoints] = useState<number>();
-  const [totalPoints, setTotalPoints] = useState<number>();
-  const [games, setGames] = useState<number>();
 
   const setWinnerLoser = async (winner:any, loser:any, winnerScore:number, enemyScore:number) =>{
     await db.collection('ranking').doc(winner).get().then((rankings:any) =>{
-      setWins(rankings.doc().wins + 1)
-      setGames(rankings.doc().games + 1)
-      setTeamPoints(rankings.doc().teamPoints + winnerScore);
-      setEnemyPoints(rankings.doc().enemyPoints + enemyScore);
-      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
+      db.collection('ranking').doc(winner).update({
+        wins: rankings.data().wins + 1,
+        games: rankings.data().games + 1 ,
+        teamPoints: rankings.data().teamPoints + winnerScore,
+        enemyPoints: rankings.data().enemyPoints + enemyScore,
+        totalPoints: (rankings.data().teamPoints + winnerScore) - (rankings.data().enemyPoints + enemyScore),
+      })
+    })  
+    await db.collection('ranking').doc(loser).get().then((rankings:any) =>{
+      db.collection('ranking').doc(loser).update({
+        loss: rankings.data().loss + 1,
+        games: rankings.data().games + 1,
+        teamPoints: rankings.data().teamPoints + enemyScore,
+        enemyPoints: rankings.data().enemyPoints + winnerScore,
+        totalPoints: (rankings.data().teamPoints + enemyScore) - (rankings.data().enemyPoints + winnerScore),
+      })
     })
-    await db.collection('ranking').doc(winner).update({
-      wins,
-      games,
-      teamPoints,
-      enemyPoints,
-      totalPoints,
-    })
-    await db.collection('rankings').doc(loser).get().then((rankings:any) =>{
-      setLoss(rankings.doc().loss + 1)
-      setGames(rankings.doc().games + 1)
-      setTeamPoints(rankings.doc().teamPoints + enemyScore);
-      setEnemyPoints(rankings.doc().enemyPoints + winnerScore);
-      setTotalPoints(teamPoints && enemyPoints? teamPoints - enemyPoints : 0)
-    })
-    await db.collection('ranking').doc(loser).update({
-      loss,
-      games,
-      teamPoints,
-      enemyPoints,
-      totalPoints,
-    })
+  
   }
 
 
@@ -119,7 +104,7 @@ const AddGames: React.FC = () => {
           </IonItem>
           <IonItem>
           <IonLabel position="fixed">Score: </IonLabel>
-          <IonInput type="tel" value={homeScore} maxlength={3} onIonChange={(e:any) => setHomeScore(e.detail.value!)} ></IonInput>
+          <IonInput type="number" value={homeScore} maxlength={3} onIonChange={(e:any) => setHomeScore(e.detail.value!)} ></IonInput>
           </IonItem>
           <IonItem>
           <IonSelect value={visitorTeam} onIonChange={ (e:any) => setVisitorTeam(e.detail.value!)} placeholder="Visitor Team" >
@@ -132,7 +117,7 @@ const AddGames: React.FC = () => {
           </IonItem>
           <IonItem>
           <IonLabel position="fixed">Score: </IonLabel>
-          <IonInput type="tel" value={visitorScore} maxlength={3} onIonChange={(e:any) => setVisitorScore(e.detail.value!)} ></IonInput>
+          <IonInput type="number" value={visitorScore} maxlength={3} onIonChange={(e:any) => setVisitorScore(e.detail.value!)} ></IonInput>
           </IonItem>
          <IonItem>
          <IonLabel position="floating">Date:</IonLabel>

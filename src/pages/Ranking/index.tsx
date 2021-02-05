@@ -50,7 +50,7 @@ const Ranking = () => {
   };
   useEffect(() => {
     fetchRankings();
-    //
+    //eslint-disable-next-line
   }, []);
 
   console.log(rankings);
