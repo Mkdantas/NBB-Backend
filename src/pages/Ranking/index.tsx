@@ -59,7 +59,7 @@ const Ranking = () => {
     <IonPage className="rankings-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Rankigns</IonTitle>
+          <IonTitle>Rankings</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
