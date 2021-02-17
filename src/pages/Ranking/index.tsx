@@ -82,7 +82,7 @@ const Ranking = () => {
                   </IonAvatar>
                   <div className="data">
                     <div>{team.wins}</div> <div>{team.loss}</div>
-                    <div>{parseInt(team.teamPoints)}</div> <div>{team.enemyPoints}</div>
+                    <div>{team.teamPoints}</div> <div>{team.enemyPoints}</div>
                     <div>{team.games}</div> <div>{team.totalPoints}</div>
                   </div>
                 </IonItem>
