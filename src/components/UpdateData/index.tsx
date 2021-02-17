@@ -109,8 +109,8 @@ const UpdateData: React.FC<updateInfo> = ({type, updateID}) => {
       homeTeam,
       visitorTeam,
       selectedDate,
-      homeScore,
-      visitorScore
+      homeScore: Number(homeScore),
+      visitorScore: Number(visitorScore)
     }).then(() =>{
       setValidated(true);
     }).catch(function (error) {
@@ -118,9 +118,9 @@ const UpdateData: React.FC<updateInfo> = ({type, updateID}) => {
     });
 
     if(homeScore > visitorScore){
-      await setWinnerLoser(homeTeam, visitorTeam, homeScore, visitorScore);
+      await setWinnerLoser(homeTeam, visitorTeam, Number(homeScore), Number(visitorScore));
     } else if (visitorScore > homeScore){
-      await setWinnerLoser(visitorTeam, homeTeam, visitorScore, homeScore);
+      await setWinnerLoser(visitorTeam, homeTeam, Number(visitorScore), Number(homeScore));
     }
   }
 

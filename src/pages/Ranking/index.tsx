@@ -69,7 +69,7 @@ const Ranking = () => {
         <IonItemDivider color="">
           <IonAvatar slot="start"></IonAvatar>
           <div className="data-table">
-            <div>Win</div> <div>Loss</div> <div>Pro</div> <div>Con</div>{" "}
+            <div>Win</div> <div>Loss</div> <div>Pro</div> <div>Con</div>
             <div>Gam</div> <div>Pts</div>
           </div>
         </IonItemDivider>
@@ -81,8 +81,8 @@ const Ranking = () => {
                     <img src={team.logo} alt={`${team.name}-logo`} />
                   </IonAvatar>
                   <div className="data">
-                    <div>{team.wins}</div> <div>{team.loss}</div>{" "}
-                    <div>{team.teamPoints}</div> <div>{team.enemyPoints}</div>{" "}
+                    <div>{team.wins}</div> <div>{team.loss}</div>
+                    <div>{parseInt(team.teamPoints)}</div> <div>{team.enemyPoints}</div>
                     <div>{team.games}</div> <div>{team.totalPoints}</div>
                   </div>
                 </IonItem>

@@ -49,10 +49,10 @@ const Games: React.FC = () => {
       });
 
     if(game.homeScore > game.visitorScore){
-      handleDeleteWinnerLoser(game.homeTeam, game.visitorTeam, game, game.homeScore, game.visitorScore);
+      handleDeleteWinnerLoser(game.homeTeam, game.visitorTeam, game, Number(game.homeScore), Number(game.visitorScore));
 
     } else if(game.visitorScore > game.homeScore){
-      handleDeleteWinnerLoser(game.visitorTeam, game.homeTeam, game, game.visitorScore, game.homeScore);
+      handleDeleteWinnerLoser(game.visitorTeam, game.homeTeam, game, Number(game.visitorScore), Number(game.homeScore));
     }
   };
 

@@ -47,13 +47,19 @@ const AddGames: React.FC = () => {
 
   const submitGame = async (e:any) =>{
     e.preventDefault();
+    console.log({ID,
+      homeTeam,
+      visitorTeam,
+      selectedDate,
+      homeScore : Number(homeScore),
+      visitorScore : Number(visitorScore)})
     await db.collection("games").doc(ID).set({
       ID,
       homeTeam,
       visitorTeam,
       selectedDate,
-      homeScore,
-      visitorScore
+      homeScore : Number(homeScore),
+      visitorScore : Number(visitorScore)
     }).then(() =>{
       setValidated(true);
     }).catch(function (error) {
@@ -61,9 +67,9 @@ const AddGames: React.FC = () => {
     });
 
     if(homeScore > visitorScore){
-      await setWinnerLoser(homeTeam, visitorTeam, homeScore, visitorScore);
+      await setWinnerLoser(homeTeam, visitorTeam, Number(homeScore), Number(visitorScore));
     } else if (visitorScore > homeScore){
-      await setWinnerLoser(visitorTeam, homeTeam, visitorScore, homeScore);
+      await setWinnerLoser(visitorTeam, homeTeam, Number(visitorScore), Number(homeScore));
     }
   }
 
